@@ -4,6 +4,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
 use frontend\models\RegistrationForm;
+use common\models\AuthorizationForm;
 
 class SiteController extends Controller
 {  
@@ -42,6 +43,14 @@ class SiteController extends Controller
             
         }
         
-        return $this->render('index', ['registration_form' => $registration_form, 'index_message' => '']);
+        $authorization_form = new AuthorizationForm();
+        
+        if($authorization_form->load(Yii::$app->request->post()) && $authorization_form->Authorization()){                  
+            
+                return $this->redirect(Yii::$app->urlManager->createUrl(['/site/user_page', 'id' => Yii::$app->user->id]));
+           
+        }
+        
+        return $this->render('index', ['registration_form' => $registration_form, 'authorization_form' => $authorization_form, 'index_message' => '']);
     } 
 }

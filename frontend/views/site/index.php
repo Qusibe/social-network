@@ -58,6 +58,25 @@ $this->head()
     
     <div id="authorization_form">
      
+        <?php $form = ActiveForm::begin(['enableAjaxValidation'   => false, 'enableClientValidation' => false]); ?>
+                              
+            <?= $form->field($authorization_form, 'login')->label(false)->textInput(['class' => 'form-control input-xs', 'placeholder'=>'Логин']); ?>
+            <?= $form->field($authorization_form, 'password')->label(false)->passwordInput(['placeholder'=>'Пароль', 'class'=>'form-control input-xs']); ?> 
+        
+            <?php if($authorization_form->errors){ ?>
+                
+                    <a href="" class="btn btn-link" style="margin-bottom: 10px;" data-dismiss="modal" data-toggle="modal" data-target="#ModalAuthHelp">Нужна помощь?</a>
+        
+            <?php } ?>
+        
+            <?= $form->field($authorization_form, 'rememberMe')->label(false)->checkbox(['label' => 'Запомнить меня']) ?>
+           
+            <?= Html::submitButton('Войти',['class'=>'btn btn-primary']); ?>
+
+            <?php echo '<a href="" class="btn btn-link"  data-dismiss="modal" data-toggle="modal" data-target="#ModalRestorePassword">Забыли пароль?</a>' ?>
+
+        <?php ActiveForm::end(); ?> 
+        
     </div>
     
     <div id="registration_form">
