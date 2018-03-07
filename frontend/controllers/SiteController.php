@@ -8,6 +8,8 @@ use frontend\models\RegistrationForm;
 use common\models\AuthorizationForm;
 use frontend\models\User_activation;
 use frontend\models\Restore_password;
+use frontend\models\Set_User_Online;
+use frontend\models\GetUserPageData;
 
 class SiteController extends Controller
 {  
@@ -102,5 +104,23 @@ class SiteController extends Controller
         
         return $this->redirect(Yii::$app->urlManager->createUrl(['/site/index', 'message' => 'Не удалось изменить пароль']));
         
+    }
+    
+    public function actionUser_page()
+    {
+        if(!Yii::$app->user->isGuest ){
+            
+            $set_user_online = new Set_User_Online();
+            
+            $set_user_online->SetDate();
+            
+        }
+       
+        $get_user_data = new GetUserPageData(['id' => Yii::$app->request->get('id')]);
+        
+        $user_data = $get_user_data->GetData();
+        
+        return $this->render('user_page', ['user_data' => $user_data]);
+   
     }
 }
