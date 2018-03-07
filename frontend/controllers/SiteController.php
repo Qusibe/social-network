@@ -3,8 +3,11 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\web\Controller;
+use common\models\Users_token;
 use frontend\models\RegistrationForm;
 use common\models\AuthorizationForm;
+use frontend\models\User_activation;
+use frontend\models\Restore_password;
 
 class SiteController extends Controller
 {  
@@ -53,4 +56,51 @@ class SiteController extends Controller
         
         return $this->render('index', ['registration_form' => $registration_form, 'authorization_form' => $authorization_form, 'index_message' => '']);
     } 
+    
+    public function actionOut_user()
+    {
+        if(!Yii::$app->user->isGuest){
+            
+            $users_token = Users_token::findOne(['id_user' => Yii::$app->user->id]);
+         
+            $users_token->token = NULL;
+           
+            $users_token->date = NULL;
+           
+            $users_token->save();
+            
+            Yii::$app->user->logout();
+                        
+        }
+        
+        return $this->redirect(Yii::$app->urlManager->createUrl(['/site/index']));
+    }
+    
+    public function actionUser_activation()
+    {          
+       $user_activation = new User_activation(['token' => Yii::$app->request->get('token'), 'id' => Yii::$app->request->get('id')]);
+       
+       if($user_activation->Activation()){                  
+                     
+           return $this->redirect(Yii::$app->urlManager->createUrl(['/site/index', 'message' => 'Ваш акаунт активирован']));
+           
+        }
+        
+        return $this->redirect(Yii::$app->urlManager->createUrl(['/site/index', 'message' => 'Не удалось активировать акаунт']));
+        
+    }
+    
+    public function actionRestore_password()
+    {
+       $restore_password = new Restore_password(['token' => Yii::$app->request->get('token'), 'id' => Yii::$app->request->get('id'), 'password' => Yii::$app->request->get('password')]);
+       
+       if($restore_password->Restore()){                  
+                     
+           return $this->redirect(Yii::$app->urlManager->createUrl(['/site/index', 'message' => 'Ваш пароль изменен']));
+           
+        }
+        
+        return $this->redirect(Yii::$app->urlManager->createUrl(['/site/index', 'message' => 'Не удалось изменить пароль']));
+        
+    }
 }
