@@ -4,6 +4,9 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use frontend\assets\IndexAsset;
 use yii\helpers\Url;
+use common\widgets\Resending_Email;
+use common\widgets\ChangeResending_Email;
+use common\widgets\Restore_Password;
 
 IndexAsset::register($this);
 
@@ -97,6 +100,12 @@ $this->head()
     
 </div>
         
+<?php if(Yii::$app->user->isGuest){ ?>
+           
+    <?=  Restore_Password::widget(); ?> 
+
+<?php } ?>
+        
 <div id='ModalAuthHelp' class='modal fade'>
 
     <div class='modal-dialog'>
@@ -117,7 +126,9 @@ $this->head()
 
                <h4 align="center">Ваш акаунт не активирован</h4>
 
-                   
+                   <?=  Resending_Email::widget(); ?> 
+
+                   <?=  ChangeResending_Email::widget(); ?>
 
             </div>    
 

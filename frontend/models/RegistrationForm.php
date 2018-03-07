@@ -226,7 +226,7 @@ class RegistrationForm extends Model
             'id' => $user->id ,'token' => $user->token]);
         
         Yii::$app->mailer->compose()
-        ->setFrom('web571jr@gmail.com')
+        ->setFrom('')//email
         ->setTo($this->email)
         ->setSubject('Регестрация акаунта')
         ->setTextBody('Регестрация акаунта')
