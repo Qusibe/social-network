@@ -22,6 +22,19 @@ $this->head();
 
 <script language="javascript" type="text/javascript">
 
+    function JumpViewImg(id){
+
+        window.location = "<?= Yii::$app->urlManager->createUrl(['/site/view_images', 'id' => Yii::$app->request->get('id') , 'id_images' => '']); ?>" + id;
+
+    }
+    
+    function JumpFriend(id) { 
+        window.location = "<?= Yii::$app->urlManager->createUrl(['/site/user_page' , 'id' => '']); ?>" + id;
+    } 
+    
+    function JumpGroups(id) { 
+        window.location = "<?= Yii::$app->urlManager->createUrl(['/site/groups_page' , 'id' => '']); ?>" + id;;
+    } 
       
 </script>
 
@@ -33,7 +46,7 @@ $this->head();
             
             <div onclick='JumpAvatar()' style='cursor: pointer; width: 100%; height: 300px; background: url("<?= $user_data['user_info']['users_avatar']['avatar'] ?>") no-repeat center/cover;'></div>              
             
-           <p id="number_like" style='color: #3C578C; float: right; margin:8px 5px 5px 5px;'><?= 0 ?></p>
+           <p id="number_like" style='color: #3C578C; float: right; margin:8px 5px 5px 5px;'><?= count($user_data['user_info']['like_avatar']) ?></p>
             
             <img onclick = 'LikeAvatar()' style='margin-bottom: 5px; margin-top: 5px; cursor: pointer; float: right;' src="<?=  Url::to("@web/site_content/images/Like.jpg") ?>"  HEIGHT="20" WIDTH="20"  />               
             
@@ -85,7 +98,25 @@ $this->head();
                       
             <p align="center" style="margin-top: 10px; margin-bottom: 0px;"><a  href="<?= Yii::$app->urlManager->createUrl(['/site/user_friends', 'id' => Yii::$app->request->get('id')]); ?>">Друзья</a></p>
             
-           
+            <?php 
+            
+                foreach ($user_data['user_info']['users_friends'] as $model) {
+                    
+                    echo Html::beginTag('div', ['id' => $model['id_friend'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpFriend(id)']); 
+                      
+                        echo Html::beginTag('div', ['style' => '; width: 100%; height: 110px; background: url("'.$model['users_avatar']['avatar'].'") no-repeat center/cover;']); 
+
+                        echo Html::endTag('div');  
+                     
+                        echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>" . $model['users_info']['name'] . "</p>";
+                        echo "<p align='center' >" . $model['users_info']['surname'] . "</p>";
+
+                    echo Html::endTag('div');   
+                    
+                    
+                }
+            
+            ?>
             
         </div>
         
@@ -93,7 +124,44 @@ $this->head();
             
             <p align="center" style="margin-top: 10px; margin-bottom: 0px;"><a  href="<?= Yii::$app->urlManager->createUrl(['/site/list_groups', 'id' => Yii::$app->request->get('id')]); ?>">Группы</a></p>
             
-          
+            <?php
+            
+                foreach ($user_data['user_info']['users_groups'] as $model) {
+
+                    echo Html::beginTag('div', ['id' => $model['id'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpGroups(id)']); 
+
+                            echo Html::beginTag('div', ['style' => '; width: 110%; height: 110px; background: url("'.$model['way_images'].'") no-repeat center/cover;']); 
+
+                            echo Html::endTag('div');  
+
+                            echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>".$model['name_groups']."</p>";
+                            
+
+                    echo Html::endTag('div'); 
+
+                }  
+                
+            ?>
+            
+            <?php
+        
+                foreach ($user_data['participants_groups'] as $model) {
+
+                    echo Html::beginTag('div', ['id' => $model['users_groups']['id'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpGroups(id)']); 
+
+                            echo Html::beginTag('div', ['style' => '; width: 110%; height: 110px; background: url("'.$model['users_groups']['way_images'].'") no-repeat center/cover;']); 
+
+                            echo Html::endTag('div');  
+
+                            echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>".$model['users_groups']['name_groups']."</p>";
+                            
+
+                    echo Html::endTag('div'); 
+
+                }  
+                
+            ?>
+            
         </div>
                 
     </div>
@@ -104,89 +172,89 @@ $this->head();
             
             <h4 style="color:#269abc;"><?= $user_data['user_info']['users_info']['name'] ?> &nbsp <?= $user_data['user_info']['users_info']['surname'] ?><p style="color: #9acfea; float: right;"><?= $user_data['online'] ?></p></h4>                      
            
-            <?php if(!empty($user_data['basic_info']['users_info']['quote'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['quote'])){ ?>
             
-                <p style="color:#269abc;"><?= $user_data['basic_info']['users_info']['quote'] ?></p>                      
+                <p style="color:#269abc;"><?= $user_data['user_info']['users_info']['quote'] ?></p>                      
             
             <?php } ?>
                        
             <hr style="height:1px;border:none;color:lightgray;background-color:lightgray;" />          
             
-            <?php if(!empty($user_data['basic_info']['users_info']['birthday'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['birthday'])){ ?>
             
-                <p style="clear: both;color: #9acfea;">День рождения: <span style="margin-left: 40px; color:#269abc;"><?= $user_data['basic_info']['users_info']['birthday'] ?></span></p>
+                <p style="clear: both;color: #9acfea;">День рождения: <span style="margin-left: 40px; color:#269abc;"><?= $user_data['user_info']['users_info']['birthday'] ?></span></p>
             
             <?php } ?>
             
-            <?php if(!empty($user_data['basic_info']['users_info']['gender'])){ ?>                       
+            <?php if(!empty($user_data['user_info']['users_info']['gender'])){ ?>                       
                 
-                <p style="color:#9acfea;">Пол: <span style="margin-left: 115px; color:#269abc;"><?= $user_data['basic_info']['users_info']['gender'] ?></span> </p>
+                <p style="color:#9acfea;">Пол: <span style="margin-left: 115px; color:#269abc;"><?= $user_data['user_info']['users_info']['gender'] ?></span> </p>
             
             <?php } ?>
             
-            <?php if(!empty($user_data['basic_info']['users_info']['hometown'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['hometown'])){ ?>
             
-                <p style="color:#9acfea;">Родной город: <span style="margin-left: 53px; color:#269abc;"><?= $user_data['basic_info']['users_info']['hometown'] ?></span> </p>
+                <p style="color:#9acfea;">Родной город: <span style="margin-left: 53px; color:#269abc;"><?= $user_data['user_info']['users_info']['hometown'] ?></span> </p>
             
             <?php } ?>
                 
              <nobr><p style="color:#269abc; float:left;">Контактная информация &nbsp&nbsp</p> <hr style=" margin-top: 9px; width: calc(100% - 175px); height:1px;border:none;color:lightgray;background-color:lightgray; float:left;"/></nobr>              
                 
-            <?php if(!empty($user_data['basic_info']['users_info']['city'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['city'])){ ?>
             
-                <p style="clear: both;color:#9acfea;">Город: <span style="margin-left: 105px; color:#269abc;"><?= $user_data['basic_info']['users_info']['city'] ?></span> </p>
+                <p style="clear: both;color:#9acfea;">Город: <span style="margin-left: 105px; color:#269abc;"><?= $user_data['user_info']['users_info']['city'] ?></span> </p>
             
             <?php } ?>
                 
              <nobr><p style="color:#269abc; float:left;">Личная информация &nbsp&nbsp</p> <hr style=" margin-top: 9px; width:  calc(100% - 150px); height:1px;border:none;color:lightgray;background-color:lightgray; float:left;"/></nobr>              
                    
-            <?php if(!empty($user_data['basic_info']['users_info']['activity'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['activity'])){ ?>
             
-                <p style="clear: both;color:#9acfea;">Деятельность: <span style="margin-left: 50px; color:#269abc;"><?= $user_data['basic_info']['users_info']['activity'] ?></span> </p>
-            
-            <?php } ?>
-                
-            <?php if(!empty($user_data['basic_info']['users_info']['interests'])){ ?>
-            
-                <p style="color:#9acfea;">Интересы:<span style="margin-left: 80px; color:#269abc;"><?= $user_data['basic_info']['users_info']['interests'] ?></span> </p>
+                <p style="clear: both;color:#9acfea;">Деятельность: <span style="margin-left: 50px; color:#269abc;"><?= $user_data['user_info']['users_info']['activity'] ?></span> </p>
             
             <?php } ?>
                 
-            <?php if(!empty($user_data['basic_info']['users_info']['favoritemusic'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['interests'])){ ?>
             
-                <p style="color:#9acfea;">Любимая музыка:<span style="margin-left: 33px; color:#269abc;"><?= $user_data['basic_info']['users_info']['favoritemusic'] ?></span> </p>
+                <p style="color:#9acfea;">Интересы:<span style="margin-left: 80px; color:#269abc;"><?= $user_data['user_info']['users_info']['interests'] ?></span> </p>
+            
+            <?php } ?>
+                
+            <?php if(!empty($user_data['user_info']['users_info']['favoritemusic'])){ ?>
+            
+                <p style="color:#9acfea;">Любимая музыка:<span style="margin-left: 33px; color:#269abc;"><?= $user_data['user_info']['users_info']['favoritemusic'] ?></span> </p>
             
             <?php } ?>
                 
              <nobr><p style="color:#269abc; float:left;">Образование &nbsp&nbsp</p> <hr style=" margin-top: 9px; width:  calc(100% - 100px); height:1px;border:none;color:lightgray;background-color:lightgray; float:left;"/></nobr>              
               
-            <?php if(!empty($user_data['basic_info']['users_info']['highschool'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['highschool'])){ ?>
             
-                <p style="clear: both;color:#9acfea;">Вуз:<span style="margin-left: 125px; color:#269abc;"><?= $user_data['basic_info']['users_info']['highschool'] ?></span> </p>
-            
-            <?php } ?>
-                
-            <?php if(!empty($user_data['basic_info']['users_info']['faculty'])){ ?>
-            
-                <p style="color:#9acfea;">Факультет: <span style="margin-left: 75px; color:#269abc;"><?= $user_data['basic_info']['users_info']['faculty'] ?></span> </p>
+                <p style="clear: both;color:#9acfea;">Вуз:<span style="margin-left: 125px; color:#269abc;"><?= $user_data['user_info']['users_info']['highschool'] ?></span> </p>
             
             <?php } ?>
                 
-            <?php if(!empty($user_data['basic_info']['users_info']['formoftraining'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['faculty'])){ ?>
             
-                <p style="color:#9acfea;">Форма обучения:<span style="margin-left: 38px; color:#269abc;"><?= $user_data['basic_info']['users_info']['formoftraining'] ?></span> </p>
-            
-            <?php } ?>
-                
-            <?php if(!empty($user_data['basic_info']['users_info']['status'])){ ?>
-            
-                <p style="color:#9acfea;">Статус:<span style="margin-left: 102px; color:#269abc;"><?= $user_data['basic_info']['users_info']['status'] ?></span> </p>
+                <p style="color:#9acfea;">Факультет: <span style="margin-left: 75px; color:#269abc;"><?= $user_data['user_info']['users_info']['faculty'] ?></span> </p>
             
             <?php } ?>
                 
-            <?php if(!empty($user_data['basic_info']['users_info']['schools'])){ ?>
+            <?php if(!empty($user_data['user_info']['users_info']['formoftraining'])){ ?>
             
-                <p style="color:#9acfea;">Школа:<span style="margin-left: 104px; color:#269abc;"><?= $user_data['basic_info']['users_info']['schools'] ?></span> </p>
+                <p style="color:#9acfea;">Форма обучения:<span style="margin-left: 38px; color:#269abc;"><?= $user_data['user_info']['users_info']['formoftraining'] ?></span> </p>
+            
+            <?php } ?>
+                
+            <?php if(!empty($user_data['user_info']['users_info']['status'])){ ?>
+            
+                <p style="color:#9acfea;">Статус:<span style="margin-left: 102px; color:#269abc;"><?= $user_data['user_info']['users_info']['status'] ?></span> </p>
+            
+            <?php } ?>
+                
+            <?php if(!empty($user_data['user_info']['users_info']['schools'])){ ?>
+            
+                <p style="color:#9acfea;">Школа:<span style="margin-left: 104px; color:#269abc;"><?= $user_data['user_info']['users_info']['schools'] ?></span> </p>
             
             <?php } ?>
             
@@ -196,16 +264,18 @@ $this->head();
                  
             <p align="center" style=""><a  href="<?= Yii::$app->urlManager->createUrl(['/site/view_images', 'id' => Yii::$app->request->get('id')]); ?>">Фотографии пользователя</a></p>            
             
-           
+           <?php 
+            
+                foreach ($user_data['user_info']['users_images'] as $model) {
+
+                    echo "<li onclick='JumpViewImg(".$model['id'].")' style='cursor: pointer; display:inline-block; margin-left: 5px;  width: 150px; height: 150px; background: url(". $model['way_images'] . ") no-repeat center/cover;'></li>";
+
+                }
+            
+            ?>
             
         </ul>
-        
-        <script language="javascript" type="text/javascript">
-        
-        
-        
-        </script>
-        
+             
         <div id="user_wall">
            
             <?php  if($user_data['button_wall']){ ?>
@@ -213,7 +283,73 @@ $this->head();
                 <button type='submit' id="button_user_wall" class='btn btn-default btn-block'  data-dismiss='modal' data-toggle='modal' data-target='#modal_user_wall' >Оставить запись</button>
             
             <?php }  ?>
-            
+                
+            <?php
+                
+                    foreach ($user_data['user_info']['users_wall'] as $model) {
+
+                        echo "<div style='margin-top: 20px; width: 100%; height: auto;'>";
+                    
+                            echo "<div style=' margin-bottom: 10px; width: 100%; height: 50px;'>";
+
+                               echo Html::beginTag('div', ['onclick' => 'JumpFriend('.$model['id_friend'].')', 'style' => 'cursor: pointer; margin-right: 10px; float: left; width: 50px; height: 50px; background: url("'. $model['users_avatar']['avatar'].'") no-repeat center/cover;']); 
+
+                               echo Html::endTag('div');  
+
+                               echo "<div style='width: calc(100% - 110px); float: left;'>";
+                               
+                                    echo "<p align='center' style='overflow-x: hidden;'>". $model['users_info']['name'] . " ". $model['users_info']['surname'] ."</p>";
+                               
+                               echo "</div>";
+                               
+                               echo "<div onclick='LikeWallUser(".$model['id'].")' style='float: left; cursor: pointer;  width: 50px; height: 50px;'>";
+                               
+                                    echo '<p align="center" style="margin-bottom: 0px;"><img src="'. Url::to("@web/site_content/images/Like.jpg") .'"  HEIGHT="20" WIDTH="20"  /></p>';
+                                    
+                                    echo "<p align='center' id='number_wall_like".$model['id']."' style='color: #3C578C;'>". count($model['users_wall_like']) ."</p>";
+                                   
+                               echo "</div>";
+                               
+                            echo "</div>";
+
+                        if(!empty($model['message'])){    
+                            
+                            echo "<p style='margin: 10px;'>- ". $model['message'] ."</p>"; 
+                        
+                        }
+                            
+                        if($model['format'] === "images"){
+                       
+                            echo "<div style='width: 100%; height: 250px; background: url(". $model['way_file'] . ") no-repeat center/cover;'></div>";                                           
+                           
+                        }
+                        
+                        if($model['format'] === "video"){
+                           
+                            echo '<video src="'. $model['way_file'] .'" controls width="100%" height="250px"></video>';                                 
+                        
+                        }
+                        
+                        if($model['format'] === "audio"){
+                            
+                            echo '<audio src="'. $model['way_file'] .'" controls></audio>';
+                            
+                        }                                                  
+                        
+                        echo "</div>";
+                        
+                        if(Yii::$app->request->get('id') == Yii::$app->user->id || Yii::$app->user->id == $model['id_friend']){
+                            
+                            echo Html::submitButton('Удалить',['onclick' => 'DeleteWall('.$model['id'].')' ,'class'=>'btn btn-warning btn-xs', 'style' => 'margin: 3px; float: right;']);                                  
+                            
+                        }
+                        
+                        echo '<hr style="clear: both;height:1px;border:none;color:lightgray;background-color:lightgray;" />';
+                   
+                    }
+                
+                ?>
+                
         </div>
         
     </div>

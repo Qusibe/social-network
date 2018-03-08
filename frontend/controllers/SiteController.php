@@ -3,6 +3,7 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\web\UploadedFile;
 use common\models\Users_token;
 use frontend\models\RegistrationForm;
 use common\models\AuthorizationForm;
@@ -10,6 +11,7 @@ use frontend\models\User_activation;
 use frontend\models\Restore_password;
 use frontend\models\Set_User_Online;
 use frontend\models\GetUserPageData;
+use frontend\models\Editing_Form;
 
 class SiteController extends Controller
 {  
@@ -122,5 +124,34 @@ class SiteController extends Controller
         
         return $this->render('user_page', ['user_data' => $user_data]);
    
+    }
+    
+    public function actionEditing()
+    {
+        if(Yii::$app->user->isGuest){
+            
+            return $this->redirect(Yii::$app->urlManager->createUrl(['/site/index', 'message' => 'Необходимо авторизоваться']));
+                        
+        }
+       
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+             
+        $edit_form = new Editing_Form();
+        
+        if($edit_form->load(Yii::$app->request->post())){                  
+                     
+            $edit_form->file = UploadedFile::getInstance($edit_form, 'file');
+
+            $edit_form->Editing();
+           
+            return $this->redirect(Yii::$app->urlManager->createUrl(['/site/user_page', 'id' => Yii::$app->user->id]));  
+          
+        }
+         
+        return $this->render('editing', ['edit_form' => $edit_form]);
+        
+        
     }
 }

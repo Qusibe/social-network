@@ -5,6 +5,8 @@ namespace frontend\models;
 use Yii;
 use yii\base\Model;
 use common\models\Users;
+use common\models\Users_friends;
+use common\models\Participants_groups;
 
 class GetUserPageData extends Model
 {  
@@ -77,8 +79,9 @@ class GetUserPageData extends Model
             
         }
         
-        $data['user_info'] = Users::find()->where('users.id = :id', [':id' => $this->id])->joinWith('users_avatar')
-                ->joinWith('users_online')->joinWith('users_info')->asArray()->one();
+        $data['user_info'] = Users::find()->where('users.id = :id', [':id' => $this->id])->joinWith('users_avatar')->joinWith('like_avatar')
+                ->joinWith('users_online')->joinWith('users_info')->joinWith('users_images')->joinWith('users_friends')
+                ->joinWith('users_wall')->joinWith('users_groups')->asArray()->one();
         
         if($data['user_info']['users_online']['date']){
         
@@ -98,6 +101,12 @@ class GetUserPageData extends Model
             
             $data['online'] = "Offline";
             
+        }
+        
+        if(count($data['user_info']['users_groups']) < 4){
+        
+            $data['participants_groups'] = Participants_groups::find()->where('participants_groups.id_user = :id_user', [':id_user' => $this->id])->andWhere('status = :status', [':status' => 0])->joinWith('users_groups')->orderBy('id DESC')->limit(4 - count($data['user_info']['users_groups']))->asArray()->all(); 
+        
         }
         
         return $data;
