@@ -5,6 +5,7 @@ use yii\widgets\ActiveForm;
 use frontend\assets\User_PageAsset;
 use common\widgets\Navigation_User;
 use yii\helpers\Url;
+use common\widgets\User_chat;
 
 Html::csrfMetaTags();
 
@@ -19,6 +20,8 @@ $this->head();
     <?=  Navigation_User::widget(); ?>
     
 </div>
+
+<?=  User_chat::widget(); ?>
 
 <script language="javascript" type="text/javascript">
 
@@ -125,7 +128,182 @@ $this->head();
 
         }
 
-    }          
+    }       
+    
+    function AddFriend() { 
+                  
+            if(confirm('Добавить этого пользователя в друзья?')){                              
+               
+            }else{
+                
+                return;
+                
+            }   
+                  
+            $.ajax({
+                async: false,
+                type: "POST",
+                cache: false,
+                url: "<?= Yii::$app->urlManager->createUrl(['/site/add_friends']); ?>",
+                data: {id: <?= Yii::$app->request->get('id'); ?>, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+                success: function(data) {
+                    
+                    if($.parseJSON(data)){
+                        
+                        alert("Пользователю отправлен запросс на добавление в друзья.");
+                        
+                        window.location.href = "<?= Yii::$app->urlManager->createUrl(['/site/user_page' , 'id' => Yii::$app->request->get('id')]); ?>";
+                        
+                    }else{
+                        
+                        alert("Произошла ошибка!");
+                        
+                    }
+                    
+                }                                 
+            });
+            
+        }
+               
+        function DellApplication() { 
+                  
+            if(confirm('Отклонить запросс?')){                              
+               
+            }else{
+                
+                return;
+                
+            }   
+                  
+            $.ajax({
+                async: false,
+                type: "POST",
+                cache: false,
+                url: "<?= Yii::$app->urlManager->createUrl(['/site/dell_application']); ?>",
+                data: {id: <?= Yii::$app->request->get('id'); ?>, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+                success: function(data) {
+                    
+                    if($.parseJSON(data)){
+                        
+                        alert("Запросс на добавления в друзья отклонен.");
+                        
+                        window.location.href = "<?= Yii::$app->urlManager->createUrl(['/site/user_page' , 'id' => Yii::$app->request->get('id')]); ?>";
+                        
+                    }else{
+                        
+                        alert("Произошла ошибка!");
+                        
+                    }
+                    
+                }                                 
+            });
+                      
+        } 
+        
+        function DellFriends() { 
+                  
+            if(confirm('Удалить из друзей?')){                              
+               
+            }else{
+                
+                return;
+                
+            }   
+                  
+            $.ajax({
+                async: false,
+                type: "POST",
+                cache: false,
+                url: "<?= Yii::$app->urlManager->createUrl(['/site/dell_friends']); ?>",
+                data: {id: <?= Yii::$app->request->get('id'); ?>, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+                success: function(data) {
+                    
+                    if($.parseJSON(data)){
+                        
+                        alert("<?= $user_data['user_info']['users_info']['name'] ?> <?= $user_data['user_info']['users_info']['surname'] ?> Удален из друзей.");
+                        
+                        window.location.href = "<?= Yii::$app->urlManager->createUrl(['/site/user_page' , 'id' => Yii::$app->request->get('id')]); ?>";
+                        
+                    }else{
+                        
+                        alert("Произошла ошибка!");
+                        
+                    }
+                    
+                }                                 
+            });
+                    
+        } 
+        
+        function DellSubscribers() { 
+                  
+            if(confirm('Отклонить дружбу?')){                              
+               
+            }else{
+                
+                return;
+                
+            }   
+                  
+            $.ajax({
+                async: false,
+                type: "POST",
+                cache: false,
+                url: "<?= Yii::$app->urlManager->createUrl(['/site/dell_subscribers']); ?>",
+                data: {id: <?= Yii::$app->request->get('id'); ?>, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+                success: function(data) {
+                    
+                    if($.parseJSON(data)){
+                        
+                        alert("Дружба отклонена.");
+                        
+                        window.location.href = "<?= Yii::$app->urlManager->createUrl(['/site/user_page' , 'id' => Yii::$app->request->get('id')]); ?>";
+                        
+                    }else{
+                        
+                        alert("Произошла ошибка!");
+                        
+                    }
+                    
+                }                                 
+            });
+                   
+        } 
+        
+        function AddSubscribers() { 
+                  
+            if(confirm('Добавить в список друзей?')){                              
+               
+            }else{
+                
+                return;
+                
+            }   
+                  
+            $.ajax({
+                async: false,
+                type: "POST",
+                cache: false,
+                url: "<?= Yii::$app->urlManager->createUrl(['/site/add_subscribers']); ?>",
+                data: {id: <?= Yii::$app->request->get('id'); ?>, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+                success: function(data) {
+                    
+                    if($.parseJSON(data)){
+                        
+                        alert("Добавлен в список друзей.");
+                        
+                        window.location.href = "<?= Yii::$app->urlManager->createUrl(['/site/user_page' , 'id' => Yii::$app->request->get('id')]); ?>";
+                        
+                    }else{
+                        
+                        alert("Произошла ошибка!");
+                        
+                    }
+                    
+                }                                 
+            });
+                   
+        } 
       
 </script>
 
@@ -151,9 +329,9 @@ $this->head();
                
                 <img onclick='DellFriends()' title="Удалить из друзей?" style='margin-right: 10px; margin-bottom: 5px; margin-top: 5px; cursor: pointer; float: right;' src="<?=  Url::to("@web/site_content/images/Delete.jpg") ?>"  HEIGHT="20" WIDTH="20"  />            
                 
-                <button onclick='JumpUserChat()'  type='submit' class='btn btn-primary btn-block' data-dismiss='modal' data-toggle='modal' data-target='#modal_user_chat' style="margin-top: 10px;">Написать сообщение</button>
+                <button onclick='JumpUserChat(<?= Yii::$app->request->get('id') ?>)'  type='submit' class='btn btn-primary btn-block' data-dismiss='modal' data-toggle='modal' data-target='#modal_user_chat' style="margin-top: 10px;">Написать сообщение</button>
                 
-                <button onclick='JumpVideoChat()' type='submit' class='btn btn-info btn-block' style="margin-top: 10px;">Позвонить</button>
+                <button onclick='JumpVideoChat(<?= Yii::$app->request->get('id') ?>, "<?= $user_data['user_info']['users_info']['name'] ?>", "<?= $user_data['user_info']['users_info']['surname'] ?>")' type='submit' class='btn btn-info btn-block' style="margin-top: 10px;">Позвонить</button>
                           
             <?php } ?>
             

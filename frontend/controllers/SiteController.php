@@ -17,6 +17,14 @@ use frontend\models\Comment_avatar_user;
 use frontend\models\User_Wall_Form;
 use frontend\models\Dell_user_wall;
 use frontend\models\Like_user_wall;
+use frontend\models\Add_friends;
+use frontend\models\Dell_application;
+use frontend\models\Dell_friends;
+use frontend\models\Dell_subscribers;
+use frontend\models\Add_subscribers;
+use frontend\models\User_friends;
+use frontend\models\User_chat;
+use frontend\models\List_message;
 
 class SiteController extends Controller
 {  
@@ -245,5 +253,151 @@ class SiteController extends Controller
         $data = $like_user_wall->Like();
        
         return json_encode($data);
+    }
+    
+    public function actionAdd_friends()
+    {
+        if(Yii::$app->user->isGuest){
+            
+            return json_encode(false);
+                        
+        }
+     
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $user_friends = new Add_friends(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $user_friends->Add();
+       
+        return json_encode($data);
+    }
+    
+    public function actionDell_application()
+    {
+        if(Yii::$app->user->isGuest){
+            
+            return json_encode(false);
+                        
+        }
+
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $dell_application = new Dell_application(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $dell_application->Dell();
+       
+        return json_encode($data);
+    }
+    
+    public function actionDell_friends()
+    {
+        if(Yii::$app->user->isGuest){
+            
+            return json_encode(false);
+                        
+        }
+
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $dell_friends = new Dell_friends(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $dell_friends->Dell();
+       
+        return json_encode($data);
+    }
+    
+    public function actionDell_subscribers()
+    {
+        if(Yii::$app->user->isGuest){
+            
+            return json_encode(false);
+                        
+        }
+
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $dell_subscribers = new Dell_subscribers(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $dell_subscribers->Dell();
+       
+        return json_encode($data);
+    }
+    
+    public function actionAdd_subscribers()
+    {
+        if(Yii::$app->user->isGuest){
+            
+            return json_encode(false);
+                        
+        }
+
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $user_subscribers = new Add_subscribers(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $user_subscribers->Add();
+       
+        return json_encode($data);
+    }
+    
+    public function actionUser_friends()
+    {
+        if(!Yii::$app->user->isGuest ){
+            
+            $set_user_online = new Set_User_Online();
+            
+            $set_user_online->SetDate();
+            
+        }
+        
+        $user_friends = new User_friends(['id' => Yii::$app->request->get('id')]);
+        
+        $friends_data = $user_friends->GetData();
+        
+        return $this->render('user_friends', ['friends_data' => $friends_data]);       
+    }
+    
+    public function actionUser_chat()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return;
+
+        }
+        
+        $user_chat = new User_chat(['id' => Yii::$app->request->post('id'), 'message' => Yii::$app->request->post('message'), 'size' => Yii::$app->request->post('size')]);
+        
+        $data = $user_chat->GetData();
+       
+        return json_encode($data);        
+    }
+    
+    public function actionList_message()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return;
+
+        }
+       
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $list_message = new List_message();
+        
+        $list_data = $list_message->GetData();
+        
+        return $this->render('list_message', ['list_data' => $list_data]);
     }
 }
