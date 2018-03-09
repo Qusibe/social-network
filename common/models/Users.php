@@ -46,8 +46,8 @@ class Users extends ActiveRecord implements IdentityInterface
       
     public function getUsers_friends()
     {
-        return $this->hasMany(Users_friends::className(), ['id_user' => 'id'])->where('users_friends.status = :status', [':status' => 0])
-                ->joinWith('users_avatar')->joinWith('users_info')->orderBy('id DESC')->limit(4);
+        return $this->hasMany(Users_friends::className(), ['id_user' => 'id'])->andOnCondition(['users_friends.status' => 0])
+                ->joinWith('users_avatar')->joinWith('users_info')->orderBy('id DESC')->limit(4);      
     }
     
     public function getUsers_wall()

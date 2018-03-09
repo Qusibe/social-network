@@ -37,6 +37,10 @@ class GetUserPageData extends Model
                 $data['user_status'] = 'this';                               
                 
                 $data['button_wall'] = true;
+                
+                $data['users_subscribers'] = Users_friends::find()->where('users_friends.id_user = :id_user', [':id_user' => $this->id])
+                ->andWhere( 'users_friends.status = :status', [':status' => 2])
+                ->joinWith('users_info')->joinWith('users_avatar')->orderBy('id DESC')->asArray()->all();
 
             }else{   
             
@@ -82,7 +86,7 @@ class GetUserPageData extends Model
         $data['user_info'] = Users::find()->where('users.id = :id', [':id' => $this->id])->joinWith('users_avatar')->joinWith('like_avatar')
                 ->joinWith('users_online')->joinWith('users_info')->joinWith('users_images')->joinWith('users_friends')
                 ->joinWith('users_wall')->joinWith('users_groups')->asArray()->one();
-        
+               
         if($data['user_info']['users_online']['date']){
         
             $result_date = (int)((strtotime('' . date("Y/m/d") . ' ' . date("H:i:s") .'') - strtotime($data['user_info']['users_online']['date'])) / 60);

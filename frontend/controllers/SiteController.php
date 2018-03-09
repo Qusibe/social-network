@@ -12,6 +12,11 @@ use frontend\models\Restore_password;
 use frontend\models\Set_User_Online;
 use frontend\models\GetUserPageData;
 use frontend\models\Editing_Form;
+use frontend\models\Like_user_avatar;
+use frontend\models\Comment_avatar_user;
+use frontend\models\User_Wall_Form;
+use frontend\models\Dell_user_wall;
+use frontend\models\Like_user_wall;
 
 class SiteController extends Controller
 {  
@@ -117,12 +122,26 @@ class SiteController extends Controller
             $set_user_online->SetDate();
             
         }
+        
+        $user_wall_form = new User_Wall_Form();
+        
+        if($user_wall_form->load(Yii::$app->request->post())){
+            
+            if($user_wall_form->validate()){
+            
+            $user_wall_form->user_file = UploadedFile::getInstances($user_wall_form, 'user_file');
+         
+            $user_wall_form->upload();
+           
+            }
+            
+        }
        
         $get_user_data = new GetUserPageData(['id' => Yii::$app->request->get('id')]);
         
         $user_data = $get_user_data->GetData();
         
-        return $this->render('user_page', ['user_data' => $user_data]);
+        return $this->render('user_page', ['user_data' => $user_data, 'user_wall_form' => $user_wall_form]);
    
     }
     
@@ -151,7 +170,80 @@ class SiteController extends Controller
         }
          
         return $this->render('editing', ['edit_form' => $edit_form]);
+               
+    }
+    
+    public function actionLike_user_avatar()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $like_user_avatar = new Like_user_avatar(['id' => Yii::$app->request->post('id')]);
         
+        $data = $like_user_avatar->Like();
+       
+        return json_encode($data);
+    }
+    
+    public function actionComment_avatar_user()
+    {
+        if(!Yii::$app->user->isGuest ){
+            
+            $set_user_online = new Set_User_Online();
+            
+            $set_user_online->SetDate();
+            
+        }
         
+        $comment_avatar_user = new Comment_avatar_user(['id' => Yii::$app->request->post('id'), 'comment' => Yii::$app->request->post('comment'), 'size' => Yii::$app->request->post('size')]);
+        
+        $data = $comment_avatar_user->Comment();
+        
+        return json_encode($data);               
+    }
+    
+    public function actionDell_user_wall()
+    {  
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+        
+        $set_user_online = new Set_User_Online();
+            
+        $set_user_online->SetDate();
+        
+        $dell_user_wall = new Dell_user_wall(['id_wall' => Yii::$app->request->post('id_wall')]);
+        
+        $data = $dell_user_wall->Delete();
+        
+        return json_encode($data);               
+    }
+    
+    public function actionLike_user_wall()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+        
+        $set_user_online = new Set_User_Online();
+            
+        $set_user_online->SetDate();                   
+       
+        $like_user_wall = new Like_user_wall(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $like_user_wall->Like();
+       
+        return json_encode($data);
     }
 }

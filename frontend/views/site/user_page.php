@@ -35,6 +35,97 @@ $this->head();
     function JumpGroups(id) { 
         window.location = "<?= Yii::$app->urlManager->createUrl(['/site/groups_page' , 'id' => '']); ?>" + id;;
     } 
+    
+    function LikeAvatar(id) { 
+     
+        $.ajax({
+            async: false,
+            type: "POST",
+            cache: false,
+            url: "<?= Yii::$app->urlManager->createUrl(['/site/like_user_avatar']); ?>",
+            data: {id: id, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+            success: function(data) {
+          
+                if($.parseJSON(data)){
+
+                    var elem1 = document.getElementById('number_like');
+
+                    elem1.innerText = Number(elem1.innerText) + 1;
+
+                }else{
+
+                    alert("Вы уже ставили лайк");
+
+                }
+            
+            }                                 
+        });
+       
+    } 
+    
+    function DeleteWall(id)
+    {
+        if(confirm('Удалить запись на стене?')){                              
+
+        }else{
+
+            return;
+
+        }   
+
+        $.ajax({
+            async: false,
+            type: "POST",
+            cache: false,
+            url: "<?= Yii::$app->urlManager->createUrl(['/site/dell_user_wall']); ?>",
+            data: {id_wall: id, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+            success: function(data) {
+
+                if($.parseJSON(data)){
+
+                    alert("запись удаленна.")
+
+                    window.location.href = "<?= Yii::$app->urlManager->createUrl(['/site/user_page' , 'id' => Yii::$app->request->get('id')]); ?>";
+
+                }else{
+
+                    alert("Произошла ошибка!");
+
+                }
+
+            }                                 
+        });
+
+    }
+    
+    function LikeWallUser(id){
+                
+        var DataWallLike;
+
+        $.ajax({
+            async: false,
+            type: "POST",
+            cache: false,
+            url: "<?= Yii::$app->urlManager->createUrl(['/site/like_user_wall']); ?>",
+            data: {id: id, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+            success: function(data) {
+            DataWallLike = $.parseJSON(data);                       
+            }                                 
+        });
+
+        if(DataWallLike){
+
+            var elem1 = document.getElementById('number_wall_like' + id);
+
+            elem1.innerText = Number(elem1.innerText) + 1;
+
+        }else{
+
+            alert("Вы уже ставили лайк");
+
+        }
+
+    }          
       
 </script>
 
@@ -44,15 +135,15 @@ $this->head();
         
         <div id="user_avatar">
             
-            <div onclick='JumpAvatar()' style='cursor: pointer; width: 100%; height: 300px; background: url("<?= $user_data['user_info']['users_avatar']['avatar'] ?>") no-repeat center/cover;'></div>              
+            <div onclick='JumpAvatar(<?= $user_data['user_info']['users_avatar']['id_user'] ?>)' style='cursor: pointer; width: 100%; height: 300px; background: url("<?= $user_data['user_info']['users_avatar']['avatar'] ?>") no-repeat center/cover;'></div>              
             
            <p id="number_like" style='color: #3C578C; float: right; margin:8px 5px 5px 5px;'><?= count($user_data['user_info']['like_avatar']) ?></p>
             
-            <img onclick = 'LikeAvatar()' style='margin-bottom: 5px; margin-top: 5px; cursor: pointer; float: right;' src="<?=  Url::to("@web/site_content/images/Like.jpg") ?>"  HEIGHT="20" WIDTH="20"  />               
+            <img onclick = 'LikeAvatar(<?= $user_data['user_info']['users_avatar']['id_user'] ?>)' style='margin-bottom: 5px; margin-top: 5px; cursor: pointer; float: right;' src="<?=  Url::to("@web/site_content/images/Like.jpg") ?>"  HEIGHT="20" WIDTH="20"  />               
             
             <?php if($user_data['user_status'] === 'this'){ ?>
             
-                <button type='submit' class='btn btn-success btn-block' data-dismiss='modal' data-toggle='modal' data-target='#ModalSubscribers' style="margin-top: 10px;">Подписчики: <?= 0 ?></button>
+                <button type='submit' class='btn btn-success btn-block' data-dismiss='modal' data-toggle='modal' data-target='#ModalSubscribers' style="margin-top: 10px;">Подписчики: <?= count($user_data['users_subscribers']) ?></button>
             
             <?php } ?>
                 
@@ -99,23 +190,23 @@ $this->head();
             <p align="center" style="margin-top: 10px; margin-bottom: 0px;"><a  href="<?= Yii::$app->urlManager->createUrl(['/site/user_friends', 'id' => Yii::$app->request->get('id')]); ?>">Друзья</a></p>
             
             <?php 
-            
-                foreach ($user_data['user_info']['users_friends'] as $model) {
-                    
-                    echo Html::beginTag('div', ['id' => $model['id_friend'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpFriend(id)']); 
-                      
-                        echo Html::beginTag('div', ['style' => '; width: 100%; height: 110px; background: url("'.$model['users_avatar']['avatar'].'") no-repeat center/cover;']); 
+                           
+                    foreach ($user_data['user_info']['users_friends'] as $model) {
 
-                        echo Html::endTag('div');  
-                     
-                        echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>" . $model['users_info']['name'] . "</p>";
-                        echo "<p align='center' >" . $model['users_info']['surname'] . "</p>";
+                        echo Html::beginTag('div', ['id' => $model['id_friend'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpFriend(id)']); 
 
-                    echo Html::endTag('div');   
-                    
-                    
-                }
-            
+                            echo Html::beginTag('div', ['style' => '; width: 100%; height: 110px; background: url("'.$model['users_avatar']['avatar'].'") no-repeat center/cover;']); 
+
+                            echo Html::endTag('div');  
+
+                            echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>" . $model['users_info']['name'] . "</p>";
+                            echo "<p align='center' >" . $model['users_info']['surname'] . "</p>";
+
+                        echo Html::endTag('div');   
+
+
+                    }
+
             ?>
             
         </div>
@@ -126,39 +217,39 @@ $this->head();
             
             <?php
             
-                foreach ($user_data['user_info']['users_groups'] as $model) {
+                    foreach ($user_data['user_info']['users_groups'] as $model) {
 
-                    echo Html::beginTag('div', ['id' => $model['id'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpGroups(id)']); 
+                        echo Html::beginTag('div', ['id' => $model['id'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpGroups(id)']); 
 
-                            echo Html::beginTag('div', ['style' => '; width: 110%; height: 110px; background: url("'.$model['way_images'].'") no-repeat center/cover;']); 
+                                echo Html::beginTag('div', ['style' => '; width: 110%; height: 110px; background: url("'.$model['way_images'].'") no-repeat center/cover;']); 
 
-                            echo Html::endTag('div');  
+                                echo Html::endTag('div');  
 
-                            echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>".$model['name_groups']."</p>";
-                            
+                                echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>".$model['name_groups']."</p>";
 
-                    echo Html::endTag('div'); 
 
-                }  
+                        echo Html::endTag('div'); 
+
+                    }           
                 
             ?>
             
             <?php
         
-                foreach ($user_data['participants_groups'] as $model) {
+                    foreach ($user_data['participants_groups'] as $model) {
 
-                    echo Html::beginTag('div', ['id' => $model['users_groups']['id'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpGroups(id)']); 
+                        echo Html::beginTag('div', ['id' => $model['users_groups']['id'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: calc(50% - 15px); height: 165px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpGroups(id)']); 
 
-                            echo Html::beginTag('div', ['style' => '; width: 110%; height: 110px; background: url("'.$model['users_groups']['way_images'].'") no-repeat center/cover;']); 
+                                echo Html::beginTag('div', ['style' => '; width: 110%; height: 110px; background: url("'.$model['users_groups']['way_images'].'") no-repeat center/cover;']); 
 
-                            echo Html::endTag('div');  
+                                echo Html::endTag('div');  
 
-                            echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>".$model['users_groups']['name_groups']."</p>";
-                            
+                                echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>".$model['users_groups']['name_groups']."</p>";
 
-                    echo Html::endTag('div'); 
 
-                }  
+                        echo Html::endTag('div'); 
+
+                    }  
                 
             ?>
             
@@ -265,13 +356,13 @@ $this->head();
             <p align="center" style=""><a  href="<?= Yii::$app->urlManager->createUrl(['/site/view_images', 'id' => Yii::$app->request->get('id')]); ?>">Фотографии пользователя</a></p>            
             
            <?php 
-            
-                foreach ($user_data['user_info']['users_images'] as $model) {
+       
+                    foreach ($user_data['user_info']['users_images'] as $model) {
 
-                    echo "<li onclick='JumpViewImg(".$model['id'].")' style='cursor: pointer; display:inline-block; margin-left: 5px;  width: 150px; height: 150px; background: url(". $model['way_images'] . ") no-repeat center/cover;'></li>";
+                        echo "<li onclick='JumpViewImg(".$model['id'].")' style='cursor: pointer; display:inline-block; margin-left: 5px;  width: 150px; height: 150px; background: url(". $model['way_images'] . ") no-repeat center/cover;'></li>";
 
-                }
-            
+                    }
+
             ?>
             
         </ul>
@@ -285,7 +376,7 @@ $this->head();
             <?php }  ?>
                 
             <?php
-                
+  
                     foreach ($user_data['user_info']['users_wall'] as $model) {
 
                         echo "<div style='margin-top: 20px; width: 100%; height: auto;'>";
@@ -347,7 +438,7 @@ $this->head();
                         echo '<hr style="clear: both;height:1px;border:none;color:lightgray;background-color:lightgray;" />';
                    
                     }
-                
+ 
                 ?>
                 
         </div>
@@ -356,39 +447,60 @@ $this->head();
     
 </div>
 
-<div id='ModalSubscribers' class='modal fade'>
+<?php if($user_data['user_status'] === 'this'){ ?>
 
-        <div class='modal-dialog'>
+    <div id='ModalSubscribers' class='modal fade'>
 
-            <div class='modal-content'>
+            <div class='modal-dialog'>
 
-                <div class='modal-header'>
+                <div class='modal-content'>
 
-                    <button class='close' data-dismiss='modal'>x</button>
+                    <div class='modal-header'>
 
-                    <h4 class='modal-title'>Подписчики</h4>
+                        <button class='close' data-dismiss='modal'>x</button>
 
-                </div>
+                        <h4 class='modal-title'>Подписчики</h4>
 
-                <br />
+                    </div>
 
-                <div class='media-body' style="overflow-y: auto;  padding: 20px; ">                                             
+                    <br />
 
-                    
+                    <div class='media-body' style="overflow-y: auto;  padding: 20px; ">                                             
 
-                </div>    
+                        <?php 
 
-                <br />
+                            foreach ($user_data['users_subscribers'] as $model) {
 
-                <div class='modal-footer'>
+                                echo Html::beginTag('div', ['id' => $model['id_friend'], 'style' => 'overflow: hidden; padding: 0px; margin-left: 10px; margin-top: 10px; cursor: pointer; width: 120px; height: 175px; border: 1px solid lightgray; background-color: white; float: left;', 'onclick' => 'JumpFriend(id)']); 
+
+                                    echo Html::beginTag('div', ['style' => 'width: 120px; height: 120px; height: 110px; background: url("'.$model['users_avatar']['avatar'].'") no-repeat center/cover;']); 
+
+                                    echo Html::endTag('div');  
+
+                                    echo "<p align='center' style='margin-top: 5px; margin-bottom: 0px;'>" . $model['users_info']['name'] . "</p>";
+                                    echo "<p align='center' >" .$model['users_info']['surname'] . "</p>";
+
+                                echo Html::endTag('div');   
+
+                            }
+
+                        ?>
+
+                    </div>    
+
+                    <br />
+
+                    <div class='modal-footer'>
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+    </div>
 
-</div>
+<?php } ?>
 
 <div id='modal_user_wall' class='modal fade'>
 
@@ -408,6 +520,19 @@ $this->head();
 
             <div class='media-body' style="padding: 20px; ">   
 
+                <?php $form = ActiveForm::begin(['options' => ['enableAjaxValidation'   => false, 'enableClientValidation' => false, 'enctype' => 'multipart/form-data']]) ?>
+ 
+                    <?= $form->field($user_wall_form, 'user_file[]')->label(false)->fileInput(); ?>
+
+                    <?= $form->field($user_wall_form, 'message')->label(false)->textarea(['rows' => 6]) ?>
+
+                    <?= $form->field($user_wall_form, 'id_user')->label(false)->textInput(['value' => '' . Yii::$app->request->get('id') .'', 'style' => 'display: none;']); ?>
+
+                    <div class="form-group">
+                        <?= Html::submitButton('Отправить', ['id' => 'BtnPhotoForm', 'class' => 'btn btn-primary', 'style' => 'float: right;']) ?>
+                    </div>
+
+                <?php ActiveForm::end() ?>
              
             </div>    
 
@@ -425,6 +550,122 @@ $this->head();
 
 <script language="javascript" type="text/javascript">
         
+       var id_avatar;
+       var size_comment = 0;
+        
+       function JumpAvatar(id)
+        {        
+            id_avatar = id;
+            
+            document.querySelector('#user_set_avatar_comments').innerHTML = '';
+            
+            $("#preview_avatar").show("slow");
+            
+            $("#user_show_avatar").css('background','url("<?= $user_data['user_info']['users_avatar']['avatar'] ?>") no-repeat');         
+            $("#user_show_avatar").css('background-size','100% auto');
+            $("#user_show_avatar").css('background-position','center');
+            
+            $.ajax({
+                async: false,
+                type: "POST",
+                cache: false,
+                url: "<?= Yii::$app->urlManager->createUrl(['/site/comment_avatar_user']); ?>",
+                data: {id: id_avatar, comment: '', size: 0, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+                success: function(data) {
+                   
+                    var comment_data = $.parseJSON(data);
+                                       
+                    size_comment = comment_data['comments'].length;                  
+                
+                    for(var i = comment_data['comments'].length - 1; i >= 0; --i){
+                                               
+                        document.querySelector('#user_set_avatar_comments').innerHTML += "<div width: 100%;><div style='margin-right: 10px; float: left; width: 30px; height: 30px; background: url(" + comment_data['comments'][i].users_avatar.avatar + ") no-repeat center/cover;'></div>"
+                        +"<h5 style='' class='modal-title'>"+comment_data['comments'][i].users_info.name + " " + comment_data['comments'][i].users_info.surname+"</h5></div><br>";
+                
+                        document.querySelector('#user_set_avatar_comments').innerHTML += '<p>' + comment_data['comments'][i].comment + ' </p>';
+                    
+                        document.querySelector('#user_set_avatar_comments').innerHTML += '<hr style="height:1px;border:none;color:lightgray;background-color:lightgray;" />';
+                        
+                    }
+
+                }                                 
+            });
+            
+            setTimeout(CommentAvatarScroll, 1000);
+           
+        }
+        
+        function CommentAvatarScroll()
+        {
+            document.getElementById("user_set_avatar_comments").scrollTop=document.getElementById("user_set_avatar_comments").scrollHeight;
+        }
+        
+        window.onload = function() {
+                      
+            var div = document.getElementById("preview_avatar");
+
+            div.onclick = function (e) {
+
+                var e = e || window.event;
+
+                var target = e.target || e.srcElement;
+
+                if (this == target){
+                   
+                    $("#preview_avatar").hide("slow");
+
+                }
+
+            };
+
+        };
+
+        function SetAvatarComment(){
+           
+            var text = document.getElementById('comment_avatar_input_text').value;
+            
+            if(text == ''){
+                
+                return;
+                
+            }
+            
+            document.getElementById('comment_avatar_input_text').value = '';
+           
+            $.ajax({
+                async: false,
+                type: "POST",
+                cache: false,
+                url: "<?= Yii::$app->urlManager->createUrl(['/site/comment_avatar_user']); ?>",
+                data: {id: id_avatar, comment: text, size: size_comment, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+                success: function(data) {
+                                    
+                    var comment_data = $.parseJSON(data);                                       
+                
+                    size_comment += comment_data['comments'].length;
+                
+                    for(var i = comment_data['comments'].length - 1; i >= 0; --i){
+                                               
+                        document.querySelector('#user_set_avatar_comments').innerHTML += "<div width: 100%;><div style='margin-right: 10px; float: left; width: 30px; height: 30px; background: url(" + comment_data['comments'][i].users_avatar.avatar + ") no-repeat center/cover;'></div>"
+                        +"<h5 style='' class='modal-title'>"+comment_data['comments'][i].users_info.name + " " + comment_data['comments'][i].users_info.surname+"</h5></div><br>";
+                
+                        document.querySelector('#user_set_avatar_comments').innerHTML += '<p>' + comment_data['comments'][i].comment + ' </p>';
+                    
+                        document.querySelector('#user_set_avatar_comments').innerHTML += '<hr style="height:1px;border:none;color:lightgray;background-color:lightgray;" />';
+                        
+                        if(comment_data['comments'].length > 0){
+                    
+                            document.getElementById("user_set_avatar_comments").scrollTop=document.getElementById("user_set_avatar_comments").scrollHeight;
+                    
+                        }
+                        
+                    }
+               
+                }                                 
+            });
+            
+        }
+
      
 </script>
 
@@ -443,7 +684,7 @@ $this->head();
                 
             </div>
             
-            <?php if(!Yii::$app->user->isGuest){ ?>
+            <?php if($user_data['user_status'] === 'this' || $user_data['user_status'] === 'friends'){ ?>
             
             <textarea style="margin-top: 5px;" id="comment_avatar_input_text" class="form-control" rows="3"></textarea>
             
@@ -453,7 +694,7 @@ $this->head();
             
             <div style="word-break:break-all;">
                 
-                <p>Войдите чтобы оставить комментарий</p>
+                <p>Вы не можете оставлять комментарии</p>
                 
             </div>
             
