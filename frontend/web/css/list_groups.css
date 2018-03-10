@@ -1,0 +1,19 @@
+@charset "utf-8";
+
+#nav_page_user{
+    width: 20%;
+    height: auto;   
+    float: left;
+}
+
+#groups_list{
+    width: 80%;
+    height: auto;
+    padding: 0px;   
+    float: left;
+}
+
+#my_groups{
+    width: 100%;
+    height: auto;
+}

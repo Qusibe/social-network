@@ -30,6 +30,14 @@ use frontend\models\Get_images;
 use frontend\models\Comment_images_user;
 use frontend\models\Del_user_images;
 use frontend\models\Like_user_images;
+use frontend\models\Create_groups;
+use frontend\models\Get_list_groups;
+use frontend\models\GetGroupsPageData;
+use frontend\models\Groups_Wall_Form;
+use frontend\models\Request_entry_groups;
+use frontend\models\Unsubscription_groups;
+use frontend\models\Leave_groups;
+use frontend\models\Add_participants;
 
 class SiteController extends Controller
 {  
@@ -485,6 +493,116 @@ class SiteController extends Controller
         
         $data = $like_user_images->Like();
        
+        return json_encode($data);
+    }
+    
+    public function actionList_groups()
+    {
+        if(!Yii::$app->user->isGuest){
+
+            $set_user_online = new Set_User_Online();
+
+            $set_user_online->SetDate();
+
+        }
+        
+        $create_groups = new Create_groups();
+        
+        if($create_groups->load(Yii::$app->request->post())){                  
+                     
+            if($create_groups->validate()){
+            
+                $create_groups->images_groups = UploadedFile::getInstance($create_groups, 'images_groups');
+
+                $create_groups->Create();
+
+            }
+                                 
+        }
+        
+        $get_list_groups = new Get_list_groups(['id' => Yii::$app->request->get('id')]);
+       
+        $list_groups = $get_list_groups->Get();                                      
+        
+        return $this->render('list_groups',['create_groups' => $create_groups, 'list_groups' => $list_groups]);
+    }
+    
+    public function actionGroups_page()
+    {
+        $groups_wall_form = new Groups_Wall_Form();
+        
+        if($groups_wall_form->load(Yii::$app->request->post())){
+            
+            $groups_wall_form->groups_file = UploadedFile::getInstances($groups_wall_form, 'groups_file');
+         
+            $groups_wall_form->upload();
+           
+        }
+        
+        $get_groups_page_data = new GetGroupsPageData(['id' => Yii::$app->request->get('id')]);
+       
+        $data_groups = $get_groups_page_data->Get();                                      
+        
+        return $this->render('groups_page', ['data_groups' => $data_groups, 'groups_wall_form' => $groups_wall_form]);
+    }
+    
+    public function actionRequest_entry_groups()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+        
+        $request_entry_groups = new Request_entry_groups(['id' => Yii::$app->request->post('id')]);
+       
+        $data = $request_entry_groups->Request();                                      
+        
+        return json_encode($data);
+    }
+    
+    public function actionUnsubscription_groups()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+        
+        $unsubscription_groups = new Unsubscription_groups(['id' => Yii::$app->request->post('id')]);
+       
+        $data = $unsubscription_groups->Unsubscription();                                      
+        
+        return json_encode($data);
+    }
+    
+    public function actionLeave_groups()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+        
+        $leave_groups = new Leave_groups(['id' => Yii::$app->request->post('id')]);
+       
+        $data = $leave_groups->Leave();                                      
+        
+        return json_encode($data);
+    }
+    
+    public function actionAdd_participants()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+        
+        $add_participants = new Add_participants(['id_groups' => Yii::$app->request->post('id_groups'), 'id_user' => Yii::$app->request->post('id_user')]);
+       
+        $data = $add_participants->Add();                                      
+        
         return json_encode($data);
     }
 }
