@@ -25,6 +25,11 @@ use frontend\models\Add_subscribers;
 use frontend\models\User_friends;
 use frontend\models\User_chat;
 use frontend\models\List_message;
+use frontend\models\Add_images;
+use frontend\models\Get_images;
+use frontend\models\Comment_images_user;
+use frontend\models\Del_user_images;
+use frontend\models\Like_user_images;
 
 class SiteController extends Controller
 {  
@@ -399,5 +404,87 @@ class SiteController extends Controller
         $list_data = $list_message->GetData();
         
         return $this->render('list_message', ['list_data' => $list_data]);
+    }
+    
+    public function actionView_images()
+    {
+        if(!Yii::$app->user->isGuest ){
+            
+            $set_user_online = new Set_User_Online();
+            
+            $set_user_online->SetDate();
+            
+        }
+        
+        $add_images = new Add_images();
+        
+        if($add_images->load(Yii::$app->request->post())){                  
+            
+                $add_images->imageFiles = UploadedFile::getInstances($add_images, 'imageFiles');
+           
+                $add_images->Add();
+                
+        }
+        
+        $get_images = new Get_images(['id' => Yii::$app->request->get('id')]);
+        
+        $data_img = $get_images->Get();
+        
+        return $this->render('view_images', ['add_images' => $add_images, 'data_img' => $data_img]);
+    }
+    
+    public function actionComment_images_user()
+    {
+        if(!Yii::$app->user->isGuest ){
+            
+            $set_user_online = new Set_User_Online();
+            
+            $set_user_online->SetDate();
+            
+        }
+        
+        $comment_images_user = new Comment_images_user(['id' => Yii::$app->request->post('id'), 'comment' => Yii::$app->request->post('comment'), 'size' => Yii::$app->request->post('size')]);
+        
+        $data = $comment_images_user->Comment();
+        
+        return json_encode($data);               
+    }
+    
+    public function actionDel_user_images()
+    {       
+        if(Yii::$app->user->isGuest){
+
+            return false;
+
+        }
+        
+        $set_user_online = new Set_User_Online();
+            
+        $set_user_online->SetDate();
+        
+        $del_user_images = new Del_user_images(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $del_user_images->Delete();
+        
+        return json_encode($data);               
+    }
+    
+    public function actionLike_user_images()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $like_user_images = new Like_user_images(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $like_user_images->Like();
+       
+        return json_encode($data);
     }
 }
