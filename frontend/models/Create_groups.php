@@ -17,7 +17,7 @@ class Create_groups extends Model
     {
         return [
           ['name_groups', 'string', 'max' => 255],
-          [['images_groups'], 'file', 'extensions' => 'png, jpg, mp4, mp3', 'maxFiles' => 1, 'skipOnEmpty' => true],
+          [['images_groups'], 'file', 'extensions' => 'png, jpg', 'maxFiles' => 1, 'skipOnEmpty' => true],
           ['description_groups', 'string']
         ];
     }   

@@ -18,9 +18,13 @@ class Comment_images_user extends Model
     public function rules()
     {
         return [            
-            ['id','safe'],
-            ['size','safe'],
-            ['comment','safe']
+            ['id', 'required'],
+            ['id','integer'],
+            
+            ['size', 'required'],
+            ['size','integer'],
+            
+            ['comment', 'string', 'max' => 255]
         ];
     }   
     

@@ -38,6 +38,12 @@ use frontend\models\Request_entry_groups;
 use frontend\models\Unsubscription_groups;
 use frontend\models\Leave_groups;
 use frontend\models\Add_participants;
+use frontend\models\Like_groups_wall;
+use frontend\models\Comment_wall_groups;
+use frontend\models\List_participants_groups;
+use frontend\models\Del_user_groups;
+use frontend\models\Dell_groups_wall;
+use frontend\models\Editing_Groups_Form;
 
 class SiteController extends Controller
 {  
@@ -604,5 +610,132 @@ class SiteController extends Controller
         $data = $add_participants->Add();                                      
         
         return json_encode($data);
+    }
+    
+    public function actionLike_groups_wall()
+    {
+        if(Yii::$app->user->isGuest){
+
+            return json_encode(false);
+
+        }
+        
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $like_groups_wall = new Like_groups_wall(['id' => Yii::$app->request->post('id')]);
+        
+        $data = $like_groups_wall->Like();
+       
+        return json_encode($data);
+    }
+    
+    public function actionComment_wall_groups()
+    {
+        if(!Yii::$app->user->isGuest ){
+            
+            $set_user_online = new Set_User_Online();
+            
+            $set_user_online->SetDate();
+            
+        }
+        
+        $comment_wall_groups = new Comment_wall_groups(['id' => Yii::$app->request->post('id'), 'id_groups' => Yii::$app->request->post('id_groups'), 'comment' => Yii::$app->request->post('comment'), 'size' => Yii::$app->request->post('size')]);
+        
+        $data = $comment_wall_groups->Comment();
+        
+        return json_encode($data);               
+    }
+    
+    public function actionList_participants_groups()
+    {
+        if(!Yii::$app->user->isGuest ){
+            
+            $set_user_online = new Set_User_Online();
+            
+            $set_user_online->SetDate();
+            
+        }
+       
+        $list_participants_groups = new List_participants_groups(['id' => Yii::$app->request->get('id')]);
+       
+        $list_participants = $list_participants_groups->Get();                                      
+        
+        return $this->render('list_participants_groups',['list_participants' => $list_participants]);
+    }
+    
+    public function actionDel_user_groups()
+    {
+        if(!Yii::$app->user->isGuest ){
+            
+            $set_user_online = new Set_User_Online();
+            
+            $set_user_online->SetDate();
+            
+        }
+        
+        if(Yii::$app->user->isGuest){
+
+            return false;
+
+        }
+        
+        $del_user_groups = new Del_user_groups(['id_user' => Yii::$app->request->post('id_user'), 'id_groups' => Yii::$app->request->post('id_groups')]);
+        
+        $data = $del_user_groups->Delete();
+        
+        return json_encode($data);               
+    }
+    
+    public function actionDell_groups_wall()
+    {     
+        if(Yii::$app->user->isGuest){
+
+            return false;
+
+        }
+        
+        $set_user_online = new Set_User_Online();
+            
+        $set_user_online->SetDate();
+        
+        $dell_groups_wall = new Dell_groups_wall(['id_wall' => Yii::$app->request->post('id_wall')]);
+        
+        $data = $dell_groups_wall->Delete();
+        
+        return json_encode($data);               
+    }
+    
+    public function actionEditing_groups()
+    {
+        if(Yii::$app->user->isGuest){
+            
+            return $this->redirect(Yii::$app->urlManager->createUrl(['/site/index', 'message' => 'Необходимо авторизоваться']));
+                        
+        }
+
+        $set_user_online = new Set_User_Online();
+
+        $set_user_online->SetDate();
+
+        $edit_groups_form = new Editing_Groups_Form();
+        
+        if($edit_groups_form->load(Yii::$app->request->post())){                  
+                     
+            if($edit_groups_form->validate()){
+            
+                $edit_groups_form->file = UploadedFile::getInstance($edit_groups_form, 'file');
+
+                $edit_groups_form->Editing();
+
+                return $this->redirect(Yii::$app->urlManager->createUrl(['/site/groups_page', 'id' => Yii::$app->request->get('id')]));  
+          
+            }
+            
+        }
+         
+        return $this->render('editing_groups', ['edit_groups_form' => $edit_groups_form]);       
+        
     }
 }

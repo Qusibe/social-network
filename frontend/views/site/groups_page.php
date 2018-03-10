@@ -281,40 +281,40 @@ $this->head();
 
     }
     
-                function DeleteWall(id)
-                {
-                    if(confirm('Удалить запись на стене?')){                              
-               
-                    }else{
+    function DeleteWall(id)
+    {
+        if(confirm('Удалить запись на стене?')){                              
 
-                        return;
+        }else{
 
-                    }   
+            return;
 
-                    $.ajax({
-                        async: false,
-                        type: "POST",
-                        cache: false,
-                        url: "<?= Yii::$app->urlManager->createUrl(['/site/dell_groups_wall']); ?>",
-                        data: {id_wall: id, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
-                        success: function(data) {
+        }   
 
-                            if($.parseJSON(data)){
+        $.ajax({
+            async: false,
+            type: "POST",
+            cache: false,
+            url: "<?= Yii::$app->urlManager->createUrl(['/site/dell_groups_wall']); ?>",
+            data: {id_wall: id, _csrf:" <?= Yii::$app->request->csrfToken ?>"},
+            success: function(data) {
 
-                                alert("запись удаленна.")
+                if($.parseJSON(data)){
 
-                                window.location.href = "<?= Yii::$app->urlManager->createUrl(['/site/groups_page' , 'id' => Yii::$app->request->get('id')]); ?>";
+                    alert("запись удаленна.")
 
-                            }else{
+                    window.location.href = "<?= Yii::$app->urlManager->createUrl(['/site/groups_page' , 'id' => Yii::$app->request->get('id')]); ?>";
 
-                                alert("Произошла ошибка!");
+                }else{
 
-                            }
+                    alert("Произошла ошибка!");
 
-                        }                                 
-                    });
-                    
                 }
+
+            }                                 
+        });
+
+    }
                
 </script>
 
