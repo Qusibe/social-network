@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use frontend\assets\MainAsset;
+use common\widgets\Video_Chat;
 
 MainAsset::register($this);
 
@@ -69,3 +70,9 @@ MainAsset::register($this);
 
 </html>
 <?php $this->endPage() ?>
+
+<?php if(!Yii::$app->user->isGuest){ ?>
+
+    <?=  Video_Chat::widget(); ?>
+
+<?php } ?>
