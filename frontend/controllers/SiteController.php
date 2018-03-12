@@ -44,6 +44,7 @@ use frontend\models\List_participants_groups;
 use frontend\models\Del_user_groups;
 use frontend\models\Dell_groups_wall;
 use frontend\models\Editing_Groups_Form;
+use frontend\models\Site_search;
 
 class SiteController extends Controller
 {  
@@ -736,6 +737,16 @@ class SiteController extends Controller
         }
          
         return $this->render('editing_groups', ['edit_groups_form' => $edit_groups_form]);       
+        
+    }
+    
+    public function actionSite_search()
+    {      
+        $site_search = new Site_search(['str_search' => Yii::$app->request->get('search')]);
+        
+        $search = $site_search->Search();
+              
+        return $this->render('site_search', ['search' => $search]);
         
     }
 }

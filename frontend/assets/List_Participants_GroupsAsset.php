@@ -9,7 +9,7 @@ class List_Participants_GroupsAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        '/Social_Network/frontend/web/css/list_participants_groups.css'
+        '/Social-Network/frontend/web/css/list_participants_groups.css'
     ];
     public $js = [
     ];

@@ -174,51 +174,73 @@ webSocketServer.on('connection', function(ws) {
               
           }
           
-          g_clients[ws.id_client].video_connect = true;
-          g_clients[ws.id_client].id_connect = ws.id;
+          if(Number(ReceptionClientData.id) === 'NaN'){
+                
+                return;
+
+           }
           
-          g_clients[Number(ReceptionClientData.id)].video_connect = true;
-          
-          g_clients[Number(ReceptionClientData.id)].firend_connect = ws;
-          
-          for (var key in g_clients[Number(ReceptionClientData.id)].ws) {
-              
-              if(g_clients[Number(ReceptionClientData.id)].ws[key].focus){
+          connection.query('SELECT * FROM `users_friends` WHERE id_user = "' + ws.id_client +'" and id_friend = "' + Number(ReceptionClientData.id) +'"', function(error, result, fields){
                   
-                  g_clients[ws.id_client].firend_connect = g_clients[Number(ReceptionClientData.id)].ws[key].ws;
-                  
-                  g_clients[Number(ReceptionClientData.id)].id_connect = g_clients[Number(ReceptionClientData.id)].ws[key].ws.id;
-                  
-                  DispatchClientData = {
-                        event: "request connect user",
-                        name: ReceptionClientData.name,
-                        surname: ReceptionClientData.surname
-                  };
+            if (error){
 
-                  g_clients[Number(ReceptionClientData.id)].ws[key].ws.send(JSON.stringify(DispatchClientData));
-                  
-                  return;
-              }
-              
-          }
-          
-         for (var key in g_clients[Number(ReceptionClientData.id)].ws) {
-          
-            g_clients[ws.id_client].firend_connect = g_clients[Number(ReceptionClientData.id)].ws[key].ws;
+                throw error;
 
-            g_clients[Number(ReceptionClientData.id)].id_connect = g_clients[Number(ReceptionClientData.id)].ws[key].ws.id;
+            }else if (result.length > 0) {
 
-            DispatchClientData = {
-                  event: "request connect user",
-                  name: ReceptionClientData.name,
-                  surname: ReceptionClientData.surname
-            };
+                    g_clients[ws.id_client].video_connect = true;
+                    g_clients[ws.id_client].id_connect = ws.id;
 
-            g_clients[Number(ReceptionClientData.id)].ws[key].ws.send(JSON.stringify(DispatchClientData));
+                    g_clients[Number(ReceptionClientData.id)].video_connect = true;
 
-            return;
-        
-         }
+                    g_clients[Number(ReceptionClientData.id)].firend_connect = ws;
+
+                    for (var key in g_clients[Number(ReceptionClientData.id)].ws) {
+
+                        if(g_clients[Number(ReceptionClientData.id)].ws[key].focus){
+
+                            g_clients[ws.id_client].firend_connect = g_clients[Number(ReceptionClientData.id)].ws[key].ws;
+
+                            g_clients[Number(ReceptionClientData.id)].id_connect = g_clients[Number(ReceptionClientData.id)].ws[key].ws.id;
+
+                            DispatchClientData = {
+                                  event: "request connect user",
+                                  name: ReceptionClientData.name,
+                                  surname: ReceptionClientData.surname
+                            };
+
+                            g_clients[Number(ReceptionClientData.id)].ws[key].ws.send(JSON.stringify(DispatchClientData));
+
+                            return;
+                        }
+
+                    }
+
+                   for (var key in g_clients[Number(ReceptionClientData.id)].ws) {
+
+                      g_clients[ws.id_client].firend_connect = g_clients[Number(ReceptionClientData.id)].ws[key].ws;
+
+                      g_clients[Number(ReceptionClientData.id)].id_connect = g_clients[Number(ReceptionClientData.id)].ws[key].ws.id;
+
+                      DispatchClientData = {
+                            event: "request connect user",
+                            name: ReceptionClientData.name,
+                            surname: ReceptionClientData.surname
+                      };
+
+                      g_clients[Number(ReceptionClientData.id)].ws[key].ws.send(JSON.stringify(DispatchClientData));
+
+                      return;
+
+                   }
+         
+            }else{
+                
+                return;
+                
+            }
+         
+         });
 
       }
       
@@ -323,41 +345,45 @@ webSocketServer.on('connection', function(ws) {
   
     ws.on('close', function() {
 
-      console.log("соединение закрыто: " + ws.id); 
-      
-      if(typeof g_clients[ws.id_client] !=="undefined"){
-      
-            if(g_clients[ws.id_client].video_connect && g_clients[ws.id_client].id_connect === ws.id ){
+        console.log("соединение закрыто: " + ws.id); 
 
-                g_clients[ws.id_client].video_connect = false;
+        if(typeof g_clients[ws.id_client] !=="undefined"){
 
-                var temp_id_client = g_clients[ws.id_client].firend_connect.id_client;
+              if(g_clients[ws.id_client].video_connect && g_clients[ws.id_client].id_connect === ws.id ){
 
-                g_clients[ws.id_client].firend_connect = null;
+                  g_clients[ws.id_client].video_connect = false;
 
-                if(typeof g_clients[temp_id_client] !=="undefined"){
+                  var temp_id_client = g_clients[ws.id_client].firend_connect.id_client;
 
-                    g_clients[temp_id_client].video_connect = false;
+                  g_clients[ws.id_client].firend_connect = null;
 
-                    g_clients[temp_id_client].firend_connect = null;
+                  if(typeof g_clients[temp_id_client] !=="undefined"){
 
-                    g_clients[temp_id_client].id_connect = null;
+                      g_clients[temp_id_client].video_connect = false;
 
-                }
+                      g_clients[temp_id_client].firend_connect = null;
 
-            }
-      
-      }
-   
-      delete g_clients[ws.id_client].ws[ws.id];
-     
-      g_clients[ws.id_client].ws_length--;
-     
-      if(g_clients[ws.id_client].ws_length === 0){
-          
-          delete g_clients[ws.id_client];
-          
-      }
+                      g_clients[temp_id_client].id_connect = null;
+
+                  }
+
+              }
+
+        }
+
+        if(typeof g_clients[ws.id_client] !=="undefined"){
+
+              delete g_clients[ws.id_client].ws[ws.id];
+
+              g_clients[ws.id_client].ws_length--;
+
+              if(g_clients[ws.id_client].ws_length === 0){
+
+                  delete g_clients[ws.id_client];
+
+              }
+
+       }
 
     });
 

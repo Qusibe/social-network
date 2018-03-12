@@ -9,7 +9,7 @@ class IndexAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        '/Social_Network/frontend/web/css/index.css'
+        '/Social-Network/frontend/web/css/index.css'
     ];
     public $js = [
     ];

@@ -9,7 +9,7 @@ class EditingAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        '/Social_Network/frontend/web/css/editing.css'
+        '/Social-Network/frontend/web/css/editing.css'
     ];
     public $js = [
     ];

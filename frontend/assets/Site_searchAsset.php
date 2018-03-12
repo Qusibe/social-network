@@ -4,12 +4,12 @@ namespace frontend\assets;
 
 use yii\web\AssetBundle;
 
-class Groups_PageAsset extends AssetBundle
+class Site_searchAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        '/Social-Network/frontend/web/css/groups_page.css'
+        '/Social-Network/frontend/web/css/site_search.css'
     ];
     public $js = [
     ];

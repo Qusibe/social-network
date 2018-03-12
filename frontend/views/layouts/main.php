@@ -48,6 +48,10 @@ MainAsset::register($this);
 
                     <form class="navbar-form navbar-right">
 
+                      <input id="search_form" type="text" class="form-control" placeholder="Поиск">
+                      
+                      <button onclick="JumpSearch()" type="button" class="btn btn-success">Поиск</button>
+                        
                    </form>
 
            </div>
@@ -76,3 +80,15 @@ MainAsset::register($this);
     <?=  Video_Chat::widget(); ?>
 
 <?php } ?>
+
+<script language="javascript" type="text/javascript">
+    
+    function JumpSearch(){
+        
+        var text = document.getElementById('search_form').value; 
+        
+        window.location = "<?= Yii::$app->urlManager->createUrl(['/site/site_search' , 'search' => '']); ?>" + text;
+        
+    }
+    
+</script>

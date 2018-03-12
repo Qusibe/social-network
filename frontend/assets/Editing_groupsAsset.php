@@ -9,7 +9,7 @@ class Editing_groupsAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        '/Social_Network/frontend/web/css/editing_groups.css'
+        '/Social-Network/frontend/web/css/editing_groups.css'
     ];
     public $js = [
     ];

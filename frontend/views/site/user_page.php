@@ -36,7 +36,7 @@ $this->head();
     } 
     
     function JumpGroups(id) { 
-        window.location = "<?= Yii::$app->urlManager->createUrl(['/site/groups_page' , 'id' => '']); ?>" + id;;
+        window.location = "<?= Yii::$app->urlManager->createUrl(['/site/groups_page' , 'id' => '']); ?>" + id;
     } 
     
     function LikeAvatar(id) { 

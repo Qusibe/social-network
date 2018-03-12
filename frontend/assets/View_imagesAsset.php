@@ -9,7 +9,7 @@ class View_imagesAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        '/Social_Network/frontend/web/css/view_images.css'
+        '/Social-Network/frontend/web/css/view_images.css'
     ];
     public $js = [
     ];

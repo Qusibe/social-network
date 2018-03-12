@@ -9,7 +9,7 @@ class User_PageAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        '/Social_Network/frontend/web/css/user_page.css'
+        '/Social-Network/frontend/web/css/user_page.css'
     ];
     public $js = [
     ];

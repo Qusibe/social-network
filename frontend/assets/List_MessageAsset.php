@@ -9,7 +9,7 @@ class List_MessageAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        '/Social_Network/frontend/web/css/list_message.css'
+        '/Social-Network/frontend/web/css/list_message.css'
     ];
     public $js = [
     ];
